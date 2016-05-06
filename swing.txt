@@ -1,0 +1,155 @@
+a.导入Swing包
+b.选择界面风格
+c.设置顶层容器
+d.设置按钮和标签
+e.将组件放到容器上
+f.为组件增加边框
+g.处理事件
+h.辅助技术支持
+下面语句导入Swing包
+import javax.swing.*;
+大部分Swing程序用到了AWT的基础底层结构和事件模型,因此需要导入两个包：
+import java.awt.*;
+import java.awt.event.*;
+如果图形界面中包括了事件处理，那么还需要导入事件处理包：
+import javax.swing.event.*;
+选择界面风格
+Swing允许选择程序的图形界面风格常用的有java风格，windows风格等
+下面的代码用于选择图形界面风格，这里选择的是跨平台的Java界面风格。
+try { UIManager.setLookAndFeel(
+UIManager.getCrossPlatformLookAndFeelClassName( )); }
+catch (Exception e) { }
+设置顶层容器
+图形界面至少要有一个顶级Swing容器
+顶级Swing容器为其它Swing组件在屏幕上的绘制和处理事件提供支持
+常用的顶级容器：
+JFrame（框架）：表示主程序窗口
+JDialog（对话框）：每个JDialog对象表示一个对话框，对话框属于二级窗口
+JApplet（小程序）：在浏览器内显示一个小程序界面
+一个框架包括边界、菜单栏、工具栏、状态栏，以及中间占主要部分的窗格
+窗格也可以看作是一种面板，但它是框架的一个组成部分
+组件不会直接放到框架上，而是放在若干个面板上，这些面板再放到窗格上
+用框架对象的getContentPane()函数来获得窗格，再调用窗格的add()函数放置面板
+public static void main(String[ ]args){JFrame frame=new JFrame("SwingApplication");
+JPanel panel1=new JPanel();
+frame.getContentPane().add(panel1,BorderLayout.CENTER);
+......//
+添加组件
+frame.pack();frame.setVisible(true);}
+应用编辑
+模式
+关键是java.awt.*里面的两个与显示设备有关的类：GraphicsEnvironment和GraphicsDevice[1]  。
+GraphicsEnvironment为Java应用程序提供了特定平台的 GraphicsDevice对象和 Font 对象集合。这些GraphicsDevice可以是各种本机和远端机器的资源，如屏幕、打印机或者是Image Buffer,甚至是Graphics2D绘图方法的目标对象。
+而GraphicsDevice就是指特定的图形环境了，如屏幕和打印设备等。这样，我们就可以用GraphicsDevice来操纵屏幕了。GraphicsDevice提供的setFullScreenWindow()方法就是设置全屏幕用的。
+事件处理
+监听器：ActionListener
+方 法：actionPerformed
+事 件：ActionEvent
+● String getActionCommand()
+actioncommand是控件内部的一个字符串，用于标识控件的状态。
+此函数可以取得控件的状态，从而决定到底该做什么。
+● int getModifiers()
+取得“产生此事件时，用户同时按下的组合键”
+● long getWhen()
+取得“产生此事件时的时间戳”
+事件产生原因：点击按钮，在列表框中选择内容，在文本框中点回车，计时器到期
+监听器：AdjustmentListener
+方 法：adjustmentValueChanged
+事 件：AdjustmentEvent
+● Adjustable getAdjustable()
+adjustable是一个接口，各种滚动条都实现了这个接口。
+● int getAdjustmentType()
+取得滚动类型，共有UNIT_INCREMENT，UNIT_DECREMENT，BLOCK_INCREMENT，BLOCK_DECREMENT，TRACK共5种类型
+● int getValue()
+取得滚动滑块的当前值
+事件产生原因：滚动条的滚动
+监听器：ItemListener
+方 法：itemStateChanged
+事 件：ItemEvent
+● Object getItem()
+取得被选中的元素。注意，返回值是Object，还应该进行强制类型转换。
+● ItemSelectable getItemSelectable()
+ItemSelectable是一个接口，代表那些包含了n个可供选择的子元素的对象。此方法返回产生此事件的对象。此方法的作用主要在于，如果一个列表框是允许多选的，那么上面的方法就不好用了，应该用此方法得到列表对象，再取得被选中的多个元素。
+● int getStateChange()
+取得选择的状态，是SELECTED还是DESELECTED
+事件产生原因：各种按钮的点击，列表框的选择
+监听器：FocusListener
+方 法：focusGained、focusLost
+事 件：FocusEvent
+● Component getOppositeComponent()
+得到“参与焦点变换的”另一个对象。如果是焦点取得事件，则返回之前拥有焦点的对象；如果是焦点失去事件，则返回得到焦点的对象。若焦点转移到另外一个应用程序，返回null
+● boolean isTemporary()
+焦点是临时性转移还是永久转移。临时性转移：用鼠标拖动窗口或者窗口变为非激活状态。其他为永久性转移。
+事件产生原因：各种组件的焦点变化
+监听器：KeyListener
+方 法：keyPressed、keyReleased、keyTyped
+事 件：KeyEvent
+● char getKeyChar()
+此方法只在keytyped中有效，返回按下的字符。比如按下shift+a，返回'A'
+● int getKeyCode()
+取得键盘上按键的整数编码。请注意，是键盘上的按键，比如F1，Ctrl，Home键等等，都有相应编码。不支持组合键，也就是说“Shift+a”和“a”返回同样的内容，都是小写a的ASCII码。但是大键盘的数字键和小键盘的数字键返回内容不同。
+● static String getKeyModifiersText(int modifiers)
+将掩码转化为字符串，比如“Ctrl”，“Ctrl+Shift”等。注意它是static方法
+● static String getKeyText(int keyCode)
+返回keyCode代表的按钮的名字，比如"Home"，"F1"等。注意它是statci方法
+事件产生原因：在各种组件上敲击键盘
+监听器：MouseListener
+方 法：mouseClicked、mousePressed、mouseReleased
+mouseEntered、mouseExited
+事 件：MouseEvent
+● Point getLocationOnScreen()
+返回鼠标相对于显示屏幕的绝对坐标（Java1.6版提供）
+● int getXOnScreen()
+返回鼠标相对于显示屏幕的X的绝对坐标（java 1.6版提供）
+● int getYOnScreen()
+返回鼠标相对于显示屏幕的Y的绝对坐标（java 1.6版提供）
+● Point getPoint()
+返回鼠标相对于组件的绝对坐标
+● int getX()
+返回鼠标相对于组件的X的绝对坐标
+● int getY()
+返回鼠标相对于组件的Y的绝对坐标
+● void translatePoint(int x, int y)
+给鼠标的做用点加上一个偏移量。比如2个参数分别是10， 20，你要用鼠标画直线，当你鼠标指向100，100开始画，实际上的线是画在110，120处
+● int getClickCount()
+产生此事件时鼠标共点击了多少下（单击、双击、三击……）
+● int getButton()
+产生此事件时，鼠标的哪个键被点击了：NOBUTTON, BUTTON1, BUTTON2 或者 BUTTON3
+● boolean isPopupTrigger()
+是否能够触发一个弹出式菜单。由于各平台触发弹出式菜单的情况不一样，因此应该在mousePressed 和 mouseReleased中都检测一下
+事件产生原因：在任何组件上点击鼠标、将光标移动进来或出去
+监听器：MouseMotionListener
+方 法：mouseDragged、mouseMoved
+事 件：MouseEvent
+事件产生原因：在任何组件上移动鼠标
+监听器：MouseWheelListener
+方 法：mouseWheelMoved
+事 件：MouseWheelEvent
+● int getScrollType()
+滚动的类型，是按块滚动WHEEL_BLOCK_SCROLL还是按单位滚动WHEEL_UNIT_SCROLL
+● int getScrollAmount()
+返回为相应此事件应该滚动的单位数。此方法有效的前提是按单位滚动。
+● int getWheelRotation()
+鼠标滚轮滚动过程中”咔嚓“声的数目。向上滚为负值，向下滚为正值
+事件产生原因：在任何组件上滚动鼠标中键
+监听器：WindowListener
+方 法：windowOpened、windowClosing、windowClosed、windowIconified
+windowDeiconified、windowActivated、windowDeactivated
+事 件：WindowEvent
+● Window getWindow()
+返回发生此事件的window对象
+● Window getOppositeWindow()
+若发生了焦点转移，返回另一个参与此事件的window对象，或者null
+● int getOldState()
+窗口变化前的状态：NORMAL、ICONIFIED、MAXIMIZED_BOTH
+● int getNewState()
+窗口变化后的状态
+事件产生原因：窗口发生变化
+监听器：WindowFocusListener
+方 法：windowGainedFocus、windowLostFocus
+事 件：WindowEvent
+事件产生原因：窗口得到或失去焦点
+监听器：WindowstateListener
+方 法：WindowstateChanged
+事 件：WindowEvent
+事件产生原因：窗口状态改变
